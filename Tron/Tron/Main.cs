@@ -5,14 +5,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Tron
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class Main : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        //List of players to allow for them to be added to a near indefinite amount. This allow for multiplayer
         List<Player> PlayerList = new List<Player> { };
 
         KeyboardState CurKeyState;
@@ -20,6 +18,7 @@ namespace Tron
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            //Sets the resolution of the game window to that of the computers resolution and sets to fullscreen
             graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             graphics.ApplyChanges();
@@ -46,8 +45,11 @@ namespace Tron
             // TODO: Unload any non ContentManager content here
         }
 
+
+        //Update and Draw are called once every tick up to 60Hz (60 times per second)
         protected override void Update(GameTime gameTime)
         {
+            //The Keyboard is the input and output device the state is which keys are pressed at any given time.
             CurKeyState = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) 
             { 
@@ -66,12 +68,15 @@ namespace Tron
 
         protected override void Draw(GameTime gameTime)
         {
+            //Begin and End indicate when the sprite batch should start gather Textures and positions to be drawn to screen and when to push all the infomation it has to the screen
+            spriteBatch.Begin();
             GraphicsDevice.Clear(Color.CornflowerBlue);
             foreach (Player CurPlayer in PlayerList)
             {
                 CurPlayer.Draw(spriteBatch);
             }
             base.Draw(gameTime);
+            spriteBatch.End();
         }
     }
 }
