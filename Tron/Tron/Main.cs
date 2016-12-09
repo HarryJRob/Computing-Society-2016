@@ -7,13 +7,15 @@ namespace Tron
 {
     public class Main : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
 
         //List of players to allow for them to be added to a near indefinite amount. This allow for multiplayer
-        List<Player> PlayerList = new List<Player> { };
+        private List<Player> PlayerList = new List<Player> { };
+        private Texture2D playerTexture;
+        private Texture2D backGround;
 
-        KeyboardState CurKeyState;
+        private KeyboardState CurKeyState;
         public Main()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -27,17 +29,16 @@ namespace Tron
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
+            PlayerList.Add(new Player(playerTexture, 1, Color.Red, Window.ClientBounds.Height, Window.ClientBounds.Width));
         }
 
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            playerTexture = Content.Load<Texture2D>("Resources/Tron");
+            backGround = Content.Load<Texture2D>("Resources/BackGround");
         }
 
         protected override void UnloadContent()
@@ -70,7 +71,7 @@ namespace Tron
         {
             //Begin and End indicate when the sprite batch should start gather Textures and positions to be drawn to screen and when to push all the infomation it has to the screen
             spriteBatch.Begin();
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //spriteBatch.Draw(backGround, new Rectangle(0,0,Window.ClientBounds.Width,Window.ClientBounds.Height), Color.White);
             foreach (Player CurPlayer in PlayerList)
             {
                 CurPlayer.Draw(spriteBatch);

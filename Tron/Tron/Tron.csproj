@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Resources\BackGround.jpg" />
+    <Content Include="Content\Resources\Tron.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
