@@ -14,7 +14,7 @@ namespace Tron
         [STAThread]
         static void Main()
         {
-            using (var game = new Main())
+            using (var game = new GameManager())
                 game.Run();
         }
     }

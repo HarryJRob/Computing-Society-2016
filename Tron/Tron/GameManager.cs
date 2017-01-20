@@ -1,22 +1,23 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Tron
 {
-    public class Main : Game
+    public class GameManager : Game
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
+        private MainGame _mainGame;
+        private MainMenu _mainMenu;
         //List of players to allow for them to be added to a near indefinite amount. This allow for multiplayer
-        private List<Player> PlayerList = new List<Player> { };
         private Texture2D playerTexture;
         private Texture2D backGround;
 
         private KeyboardState CurKeyState;
-        public Main()
+        private MouseState CurMouseState;
+        public GameManager()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -30,7 +31,6 @@ namespace Tron
         protected override void Initialize()
         {
             base.Initialize();
-            PlayerList.Add(new Player(playerTexture, 1, Color.Red, Window.ClientBounds.Height, Window.ClientBounds.Width));
         }
 
         protected override void LoadContent()
@@ -46,21 +46,41 @@ namespace Tron
             // TODO: Unload any non ContentManager content here
         }
 
-
         //Update and Draw are called once every tick up to 60Hz (60 times per second)
         protected override void Update(GameTime gameTime)
         {
             //The Keyboard is the input and output device the state is which keys are pressed at any given time.
             CurKeyState = Keyboard.GetState();
+            CurMouseState = Mouse.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) 
             { 
                 Exit();
             }
             else
             {
-                foreach (Player CurPlayer in PlayerList)
+                switch (Globals.CurrentGameState)
                 {
-                    CurPlayer.Update(CurKeyState);
+                    case Globals.GameState.MainMenu:
+                        if (_mainGame == null)
+                        {
+                            _mainGame = new MainGame(Window, playerTexture);
+                        }
+                        else
+                        {
+                            _mainGame.Update(gameTime, CurKeyState);
+                        }
+                        break;
+
+                    case Globals.GameState.PlayingGame:
+                        if (_mainMenu == null)
+                        {
+                            _mainMenu = new MainMenu(Window);
+                        }
+                        else
+                        {
+                            _mainMenu.Update(gameTime, CurKeyState, CurMouseState);
+                        }
+                        break;
                 }
             }
 
@@ -71,11 +91,19 @@ namespace Tron
         {
             //Begin and End indicate when the sprite batch should start gather Textures and positions to be drawn to screen and when to push all the infomation it has to the screen
             spriteBatch.Begin();
-            //spriteBatch.Draw(backGround, new Rectangle(0,0,Window.ClientBounds.Width,Window.ClientBounds.Height), Color.White);
-            foreach (Player CurPlayer in PlayerList)
+            spriteBatch.Draw(backGround, new Rectangle(0,0,Window.ClientBounds.Width,Window.ClientBounds.Height), Color.White);
+
+            switch (Globals.CurrentGameState)
             {
-                CurPlayer.Draw(spriteBatch);
+                case Globals.GameState.MainMenu:
+                    _mainGame.Draw(gameTime, spriteBatch);
+                    break;
+
+                case Globals.GameState.PlayingGame:
+                    _mainMenu.Draw(gameTime, spriteBatch);
+                    break;
             }
+
             base.Draw(gameTime);
             spriteBatch.End();
         }
