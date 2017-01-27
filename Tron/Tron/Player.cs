@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,8 +24,8 @@ namespace Tron
         private Vector2 LastVec; //Not sure about this?
         private Color _wallColor; //The colour of the wall to be drawn behind the player
 
+        private byte CurMovement = 0; //0 = up, 1 = right, 2 = down, 3 = left
         private List<Keys> ControlScheme = new List<Keys> { Keys.W, Keys.A, Keys.D, Keys.S}; //Currently hard coded will need to be loaded from a file
-        private List<bool> MoveList = new List<bool> { false, false, false, false}; //Up, Left ,Right ,Down ,Boost, Space
 
         private TimeSpan _aliveTime; //To determine a winner and be able to rank mutiple players we can record the time spent alive and rank according to the longest time spent alive
 
@@ -37,6 +38,8 @@ namespace Tron
         //Sets and calculates the playerTexture, Starting Position, Color of the players wall and more (not yet)
         public Player (Texture2D playerTexture, int PlayerNum, Color WallColor, int WindowYSize, int WindowXSize) //Texture, Position, ColorOfWall
         {
+            CurMovement = 1;
+
             _playerTexture = playerTexture;
             _wallColor = WallColor;
 
@@ -46,29 +49,82 @@ namespace Tron
             _playerPosition = new Vector2(20,20);
 
             //Calculate starting position based off of ID
-            if (PlayerNum == 1)
-            {
-                //Set Pos to X
-            } 
+            _playerPosition.X += 50*PlayerNum;
 
         }
+
         //Based off the keyBoard state do actions e.g if Upward key then move upwards
         //Of course this will contain the validation
         public void Update(KeyboardState CurKeyState)
         {
-            for (int i = 0; i < ControlScheme.Count; i++)
+            //0 = up, 1 = right, 2 = down, 3 = left
+            if (CurKeyState.GetPressedKeys().Length != 0)
             {
-                if (CurKeyState.IsKeyDown(ControlScheme[i]))
+                switch (CurMovement)
                 {
-                    MoveList[i] = true;
-                }
-                else
-                {
-                    MoveList[i] = false;
+                    //Needs Redoing
+                    case 0:
+                        if (CurKeyState.IsKeyDown(ControlScheme[1]))
+                        {
+                            ChangeDirection(ControlScheme[1]);
+                        }
+                        else if (CurKeyState.IsKeyDown(ControlScheme[2]))
+                        {
+                            ChangeDirection(ControlScheme[2]);
+                        }
+                        break;
+                    case 1:
+                        if (CurKeyState.IsKeyDown(ControlScheme[0]))
+                        {
+                            ChangeDirection(ControlScheme[0]);
+                        }
+                        else if (CurKeyState.IsKeyDown(ControlScheme[3]))
+                        {
+                            ChangeDirection(ControlScheme[3]);
+                        }
+                        break;
+                    case 2:
+                        if (CurKeyState.IsKeyDown(ControlScheme[1]))
+                        {
+                            ChangeDirection(ControlScheme[1]);
+                        }
+                        else if (CurKeyState.IsKeyDown(ControlScheme[2]))
+                        {
+                            ChangeDirection(ControlScheme[2]);
+                        }
+                        break;
+                    case 3:
+                        if (CurKeyState.IsKeyDown(ControlScheme[0]))
+                        {
+                            ChangeDirection(ControlScheme[0]);
+                        }
+                        else if (CurKeyState.IsKeyDown(ControlScheme[3]))
+                        {
+                            ChangeDirection(ControlScheme[3]);
+                        }
+                        break;
                 }
             }
-
             UpdatePlayer();
+        }
+
+        private void ChangeDirection(Keys CurKey)
+        {
+            switch (CurKey)
+            {
+                case Keys.W:
+                    CurMovement = 0;
+                    break;
+                case Keys.D:
+                    CurMovement = 1;
+                    break;
+                case Keys.S:
+                    CurMovement = 2;
+                    break;
+                case Keys.A:
+                    CurMovement = 3;
+                    break;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -82,49 +138,22 @@ namespace Tron
 
         public void UpdatePlayer()
         {
-            if (MoveList[0])
+            //0 = up, 1 = right, 2 = down, 3 = left
+            if (CurMovement == 0 && (_playerPosition.Y - velocity) >= 0)
             {
-                if ((_playerPosition.Y - velocity) <= 0)
-                {
-                    _playerPosition.Y = 0;
-                }
-                else
-                {
-                    _playerPosition.Y -= velocity;
-                }
+                _playerPosition.Y -= velocity;
             }
-            if (MoveList[1])
+            else if (CurMovement == 1 && (_playerPosition.X + velocity + Width) <= GameWindowX)
             {
-                if ((_playerPosition.X - velocity) <= 0)
-                {
-                    _playerPosition.X = 0;
-                }
-                else
-                {
-                    _playerPosition.X -= velocity;
-                }
+                _playerPosition.X += velocity;
             }
-            if (MoveList[2])
+            else if (CurMovement == 2 && (_playerPosition.Y + velocity + Height) <= GameWindowY)
             {
-                if ((_playerPosition.X + velocity) >= GameWindowX - Width)
-                {
-                    _playerPosition.X = GameWindowX - Width;
-                }
-                else
-                {
-                    _playerPosition.X += velocity;
-                }
+                _playerPosition.Y += velocity;
             }
-            if (MoveList[3])
+            else if (CurMovement == 3 && (_playerPosition.X - velocity) >= 0)
             {
-                if ((_playerPosition.Y + velocity) >= GameWindowY - Height)
-                {
-                    _playerPosition.Y = GameWindowY - Height;
-                }
-                else
-                {
-                    _playerPosition.Y += velocity;
-                }
+                _playerPosition.X -= velocity;
             }
         }
 
