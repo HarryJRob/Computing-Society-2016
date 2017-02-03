@@ -17,7 +17,6 @@ namespace Tron
             playerTexture = playerTex;
             window = Window;
             PlayerList.Add(new Player(playerTexture, 1, Color.Red, Window.ClientBounds.Height, Window.ClientBounds.Width));
-            PlayerList.Add(new Player(playerTexture, 2, Color.Red, Window.ClientBounds.Height, Window.ClientBounds.Width));
         }
 
         //Update and Draw are called once every tick up to 60Hz (60 times per second)

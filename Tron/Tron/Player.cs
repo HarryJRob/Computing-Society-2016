@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,6 +21,7 @@ namespace Tron
         private List<Vector2> WallList = new List<Vector2> { };
         private Vector2 LastVec; //Not sure about this?
         private Color _wallColor; //The colour of the wall to be drawn behind the player
+        private int wallWidth = 20;
 
         private byte CurMovement = 0; //0 = up, 1 = right, 2 = down, 3 = left
         private List<Keys> ControlScheme = new List<Keys> { Keys.W, Keys.A, Keys.D, Keys.S}; //Currently hard coded will need to be loaded from a file
@@ -46,10 +45,11 @@ namespace Tron
             GameWindowX = WindowXSize;
             GameWindowY = WindowYSize;
 
-            _playerPosition = new Vector2(20,20);
-
+            _playerPosition = new Vector2(20,200);
+            
             //Calculate starting position based off of ID
-            _playerPosition.X += 50*PlayerNum;
+            //_playerPosition.X += 50*PlayerNum;
+            WallList.Add(new Vector2(20,20));
 
         }
 
@@ -60,50 +60,50 @@ namespace Tron
             //0 = up, 1 = right, 2 = down, 3 = left
             if (CurKeyState.GetPressedKeys().Length != 0)
             {
-                switch (CurMovement)
-                {
-                    //Needs Redoing
-                    case 0:
-                        if (CurKeyState.IsKeyDown(ControlScheme[1]))
-                        {
-                            ChangeDirection(ControlScheme[1]);
-                        }
-                        else if (CurKeyState.IsKeyDown(ControlScheme[2]))
-                        {
-                            ChangeDirection(ControlScheme[2]);
-                        }
-                        break;
-                    case 1:
-                        if (CurKeyState.IsKeyDown(ControlScheme[0]))
-                        {
-                            ChangeDirection(ControlScheme[0]);
-                        }
-                        else if (CurKeyState.IsKeyDown(ControlScheme[3]))
-                        {
-                            ChangeDirection(ControlScheme[3]);
-                        }
-                        break;
-                    case 2:
-                        if (CurKeyState.IsKeyDown(ControlScheme[1]))
-                        {
-                            ChangeDirection(ControlScheme[1]);
-                        }
-                        else if (CurKeyState.IsKeyDown(ControlScheme[2]))
-                        {
-                            ChangeDirection(ControlScheme[2]);
-                        }
-                        break;
-                    case 3:
-                        if (CurKeyState.IsKeyDown(ControlScheme[0]))
-                        {
-                            ChangeDirection(ControlScheme[0]);
-                        }
-                        else if (CurKeyState.IsKeyDown(ControlScheme[3]))
-                        {
-                            ChangeDirection(ControlScheme[3]);
-                        }
-                        break;
-                }
+                    switch (CurMovement)
+                    {
+                        //Needs Redoing
+                        case 0:
+                            if (CurKeyState.IsKeyDown(ControlScheme[1]))
+                            {
+                                ChangeDirection(ControlScheme[1]);
+                            }
+                            else if (CurKeyState.IsKeyDown(ControlScheme[2]))
+                            {
+                                ChangeDirection(ControlScheme[2]);
+                            }
+                            break;
+                        case 1:
+                            if (CurKeyState.IsKeyDown(ControlScheme[0]))
+                            {
+                                ChangeDirection(ControlScheme[0]);
+                            }
+                            else if (CurKeyState.IsKeyDown(ControlScheme[3]))
+                            {
+                                ChangeDirection(ControlScheme[3]);
+                            }
+                            break;
+                        case 2:
+                            if (CurKeyState.IsKeyDown(ControlScheme[1]))
+                            {
+                                ChangeDirection(ControlScheme[1]);
+                            }
+                            else if (CurKeyState.IsKeyDown(ControlScheme[2]))
+                            {
+                                ChangeDirection(ControlScheme[2]);
+                            }
+                            break;
+                        case 3:
+                            if (CurKeyState.IsKeyDown(ControlScheme[0]))
+                            {
+                                ChangeDirection(ControlScheme[0]);
+                            }
+                            else if (CurKeyState.IsKeyDown(ControlScheme[3]))
+                            {
+                                ChangeDirection(ControlScheme[3]);
+                            }
+                            break;
+                    }
             }
             UpdatePlayer();
         }
@@ -132,8 +132,20 @@ namespace Tron
             //Draw Player
             spriteBatch.Draw(_playerTexture, new Rectangle((int)_playerPosition.X,(int)_playerPosition.Y, Width, Height),Color.White);
             //Draw WallList
-
+            
+            DrawWalls(spriteBatch);
             //Draw UI
+        }
+
+        private void DrawWalls(SpriteBatch spriteBatch)
+        {
+            if (_playerPosition.Y < WallList[WallList.Count -1].Y && CurMovement ==)
+            spriteBatch.Draw(_playerTexture, new Rectangle((int)WallList[WallList.Count - 1].X, (int)WallList[WallList.Count - 1].Y, wallWidth / 2, (int)Math.Abs(_playerPosition.Y - WallList[WallList.Count - 1].Y)), _wallColor);
+        }
+
+        private void AddWall()
+        {
+            WallList.Add(new Vector2(_playerPosition.X + Width/2, _playerPosition.Y + Height/2));
         }
 
         public void UpdatePlayer()
