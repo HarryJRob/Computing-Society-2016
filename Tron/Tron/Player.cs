@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,7 +20,6 @@ namespace Tron
 
         //A list of points for each corner of the wall the player has drawn behind them
         private List<Vector2> WallList = new List<Vector2> { };
-        private Vector2 LastVec; //Not sure about this?
         private Color _wallColor; //The colour of the wall to be drawn behind the player
         private int wallWidth = 20;
 
@@ -33,6 +33,9 @@ namespace Tron
         //The width and height of the texture. However these should be dependant on the screen resolution
         private static int Width = 100;
         private static int Height = 100;
+
+        private bool collision;
+        private bool turning;
 
         //Sets and calculates the playerTexture, Starting Position, Color of the players wall and more (not yet)
         public Player (Texture2D playerTexture, int PlayerNum, Color WallColor, int WindowYSize, int WindowXSize) //Texture, Position, ColorOfWall
@@ -110,6 +113,7 @@ namespace Tron
 
         private void ChangeDirection(Keys CurKey)
         {
+            turning = true;
             switch (CurKey)
             {
                 case Keys.W:
@@ -131,16 +135,6 @@ namespace Tron
         {
             //Draw Player
             spriteBatch.Draw(_playerTexture, new Rectangle((int)_playerPosition.X,(int)_playerPosition.Y, Width, Height),Color.White);
-            //Draw WallList
-            
-            DrawWalls(spriteBatch);
-            //Draw UI
-        }
-
-        private void DrawWalls(SpriteBatch spriteBatch)
-        {
-            if (_playerPosition.Y < WallList[WallList.Count -1].Y && CurMovement ==)
-            spriteBatch.Draw(_playerTexture, new Rectangle((int)WallList[WallList.Count - 1].X, (int)WallList[WallList.Count - 1].Y, wallWidth / 2, (int)Math.Abs(_playerPosition.Y - WallList[WallList.Count - 1].Y)), _wallColor);
         }
 
         private void AddWall()
@@ -148,7 +142,7 @@ namespace Tron
             WallList.Add(new Vector2(_playerPosition.X + Width/2, _playerPosition.Y + Height/2));
         }
 
-        public void UpdatePlayer()
+        private void UpdatePlayer()
         {
             //0 = up, 1 = right, 2 = down, 3 = left
             if (CurMovement == 0 && (_playerPosition.Y - velocity) >= 0)
@@ -177,6 +171,17 @@ namespace Tron
         public void StopGame()
         {
             //Stop the AliveTimer for the player
+        }
+
+        public Rectangle BoundingBox
+        {
+            get { new Rectangle((int)_playerPosition.X, (int)_playerPosition.Y, Width, Height)}
+        }
+
+        public bool Collision
+        {
+            get { return collision;}
+            set { collision = value; }
         }
     }
 }

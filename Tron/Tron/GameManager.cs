@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -12,8 +13,7 @@ namespace Tron
         private MainGame _mainGame;
         private MainMenu _mainMenu;
         //List of players to allow for them to be added to a near indefinite amount. This allow for multiplayer
-        private Texture2D playerTexture;
-        private Texture2D backGround;
+        private List<Texture2D> TexList;
 
         private KeyboardState CurKeyState;
         private MouseState CurMouseState;
@@ -37,8 +37,10 @@ namespace Tron
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            playerTexture = Content.Load<Texture2D>("Resources/Tron");
-            backGround = Content.Load<Texture2D>("Resources/BackGround");
+            TexList = new List<Texture2D>();
+            TexList.Add(Content.Load<Texture2D>("Resources/CollisionArea"));
+            TexList.Add(Content.Load<Texture2D>("Resources/BackGround"));
+            TexList.Add(Content.Load<Texture2D>("Resources/Tron"));
         }
 
         protected override void UnloadContent()
@@ -63,7 +65,7 @@ namespace Tron
                     case Globals.GameState.MainMenu:
                         if (_mainGame == null)
                         {
-                            _mainGame = new MainGame(Window, playerTexture);
+                            _mainGame = new MainGame(Window, TexList);
                         }
                         else
                         {
@@ -91,7 +93,7 @@ namespace Tron
         {
             //Begin and End indicate when the sprite batch should start gather Textures and positions to be drawn to screen and when to push all the infomation it has to the screen
             spriteBatch.Begin();
-            spriteBatch.Draw(backGround, new Rectangle(0,0,Window.ClientBounds.Width,Window.ClientBounds.Height), Color.White);
+           spriteBatch.Draw(TexList[1], new Rectangle(0,0,Window.ClientBounds.Width,Window.ClientBounds.Height), Color.White);
 
             switch (Globals.CurrentGameState)
             {
